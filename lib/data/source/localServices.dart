@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-import '../domain/models/ProductModel.dart';
+import '../../domain/models/ProductModel.dart';
 
 class HiveService<T> {
   final String boxName;

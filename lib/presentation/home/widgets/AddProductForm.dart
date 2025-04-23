@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:janel_abiya/presentation/home/provider/categoryViewModel.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../../domain/models/ProductModel.dart';
 import '../../../domain/models/SizeModel.dart';
+import '../provider/productsViewModel.dart';
 
 class AddProductForm extends ConsumerStatefulWidget {
   @override
@@ -18,31 +18,31 @@ class _AddProductFormState extends ConsumerState<AddProductForm> {
   final _formKey = GlobalKey<FormState>();
 
   String? productName, color, price, size38, size40, size42, size44, size46, size48, size50,size52,size54,size56,size58,size60;
-  String? pickedImage;
-
-  Future<void> pickAndSaveImage() async {
-    final picker = ImagePicker();
-    final picked = await picker.pickImage(source: ImageSource.gallery);
-    if (picked == null) return;
-
-    final tempImage = File(picked.path);
-    final appDir = await getApplicationDocumentsDirectory();
-    final imagesDir = Directory('${appDir.path}/images');
-
-    if (!await imagesDir.exists()) {
-      await imagesDir.create(recursive: true);
-    }
-
-    final fileName = '${DateTime.now().millisecondsSinceEpoch}_${picked.name}';
-    final savedImage = await tempImage.copy('${imagesDir.path}/$fileName');
-
-    print('✅ Image saved at: ${savedImage.path}');
-    print('📁 File exists: ${File(savedImage.path).existsSync()}');
-
-    setState(() {
-      pickedImage = savedImage.path;
-    });
-  }
+  // String? pickedImage;
+  //
+  // Future<void> pickAndSaveImage() async {
+  //   final picker = ImagePicker();
+  //   final picked = await picker.pickImage(source: ImageSource.gallery);
+  //   if (picked == null) return;
+  //
+  //   final tempImage = File(picked.path);
+  //   final appDir = await getApplicationDocumentsDirectory();
+  //   final imagesDir = Directory('${appDir.path}/images');
+  //
+  //   if (!await imagesDir.exists()) {
+  //     await imagesDir.create(recursive: true);
+  //   }
+  //
+  //   final fileName = '${DateTime.now().millisecondsSinceEpoch}_${picked.name}';
+  //   final savedImage = await tempImage.copy('${imagesDir.path}/$fileName');
+  //
+  //   print('✅ Image saved at: ${savedImage.path}');
+  //   print('📁 File exists: ${File(savedImage.path).existsSync()}');
+  //
+  //   setState(() {
+  //     pickedImage = savedImage.path;
+  //   });
+  // }
 
 
   @override
@@ -74,32 +74,32 @@ class _AddProductFormState extends ConsumerState<AddProductForm> {
                 buildTextField('Price', onSaved: (val) => price = val),
                 // Image Picker
                 const SizedBox(height: 12),
-                GestureDetector(
-                  onTap: pickAndSaveImage,
-                  child: Container(
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.grey),
-                    ),
-                    alignment: Alignment.centerLeft,
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Row(
-                      children: [
-                        Icon(Icons.image, color: Colors.grey.shade600),
-                        const SizedBox(width: 8),
-                        Text(
-                          pickedImage != null
-                              ? 'Image selected'
-                              : 'Choose an image...',
-                          style: TextStyle(color: Colors.grey.shade700),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
+                // GestureDetector(
+                //   onTap: pickAndSaveImage,
+                //   child: Container(
+                //     height: 50,
+                //     decoration: BoxDecoration(
+                //       color: Colors.grey.shade200,
+                //       borderRadius: BorderRadius.circular(8),
+                //       border: Border.all(color: Colors.grey),
+                //     ),
+                //     alignment: Alignment.centerLeft,
+                //     padding: const EdgeInsets.symmetric(horizontal: 12),
+                //     child: Row(
+                //       children: [
+                //         Icon(Icons.image, color: Colors.grey.shade600),
+                //         const SizedBox(width: 8),
+                //         Text(
+                //           pickedImage != null
+                //               ? 'Image selected'
+                //               : 'Choose an image...',
+                //           style: TextStyle(color: Colors.grey.shade700),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
+                // const SizedBox(height: 12),
 
                 buildTextField('Color', onSaved: (val) => color = val),
 
@@ -137,26 +137,25 @@ class _AddProductFormState extends ConsumerState<AddProductForm> {
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             _formKey.currentState!.save();
-                            print("PickedImageNow${pickedImage}");
                             var product = ProductModel(productName:productName!,
                                 code: productName!,
-                                imagePath: pickedImage!,
+                                imagePath: ""!,
                                 sizes: [
                                   SizeModel(
                                     color: color!,
                                     sizes: [
-                                      SizeQuantityModel(name: '38', quantity: size38!),
-                                      SizeQuantityModel(name: '40', quantity: size40!),
-                                      SizeQuantityModel(name: '42', quantity: size42!),
-                                      SizeQuantityModel(name: '44', quantity: size44!),
-                                      SizeQuantityModel(name: '46', quantity: size46!),
-                                      SizeQuantityModel(name: '48', quantity: size48!),
-                                      SizeQuantityModel(name: '50', quantity: size50!),
-                                      SizeQuantityModel(name: '52', quantity: size52!),
-                                      SizeQuantityModel(name: '54', quantity: size54!),
-                                      SizeQuantityModel(name: '56', quantity: size56!),
-                                      SizeQuantityModel(name: '58', quantity: size58!),
-                                      SizeQuantityModel(name: '60', quantity: size60!),
+                                      SizeQuantityModel(name: '38', quantity: int.parse(size38!)),
+                                      SizeQuantityModel(name: '40', quantity: int.parse(size40!)),
+                                      SizeQuantityModel(name: '42', quantity: int.parse(size42!)),
+                                      SizeQuantityModel(name: '44', quantity: int.parse(size44!)),
+                                      SizeQuantityModel(name: '46', quantity: int.parse(size46!)),
+                                      SizeQuantityModel(name: '48', quantity: int.parse(size48!)),
+                                      SizeQuantityModel(name: '50', quantity: int.parse(size50!)),
+                                      SizeQuantityModel(name: '52', quantity: int.parse(size52!)),
+                                      SizeQuantityModel(name: '54', quantity: int.parse(size54!)),
+                                      SizeQuantityModel(name: '56', quantity: int.parse(size56!)),
+                                      SizeQuantityModel(name: '58', quantity: int.parse(size58!)),
+                                      SizeQuantityModel(name: '60', quantity: int.parse(size60!)),
                                     ],
                                   ),
                                 ]);

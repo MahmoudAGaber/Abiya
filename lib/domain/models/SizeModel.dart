@@ -1,13 +1,8 @@
 import 'package:hive/hive.dart';
 
-   part 'SizeModel.g.dart';
 
-   @HiveType(typeId: 1)
    class SizeModel {
-     @HiveField(0)
      String color; // e.g., "Red", "Blue"
-
-     @HiveField(1)
      List<SizeQuantityModel> sizes; // List of sizes, e.g., ["S", "M", "L"]
 
      SizeModel({
@@ -40,13 +35,9 @@ import 'package:hive/hive.dart';
      }
    }
 
-   @HiveType(typeId: 2)
    class SizeQuantityModel {
-     @HiveField(0)
      String name; // e.g., "S", "M", "L"
-
-     @HiveField(1)
-     String quantity; // e.g., "10", "5"
+     int quantity; // e.g., "10", "5"
 
      SizeQuantityModel({
        required this.name,
@@ -69,7 +60,7 @@ import 'package:hive/hive.dart';
 
      SizeQuantityModel copyWith({
        String? name,
-       String? quantity,
+       int? quantity,
      }) {
        return SizeQuantityModel(
          name: name ?? this.name,

@@ -5,8 +5,9 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:janel_abiya/data/StateModel.dart';
+import 'package:janel_abiya/presentation/home/provider/productsViewModel.dart';
 
-import '../provider/categoryViewModel.dart';
+import '../../../domain/models/ProductModel.dart';
 import '../widgets/AddProductForm.dart';
 
 class CategoryScreen extends ConsumerStatefulWidget {
@@ -39,7 +40,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                         suffixIcon: _searchController.text.isNotEmpty? IconButton(
                           icon: Icon(Icons.clear,color: Colors.black,),
                           onPressed: () {
-                            ref.read(productProvider.notifier).init(); // Reset the list state
+                           // ref.read(productProvider.notifier).init(); // Reset the list state
                             setState(() {}); // Update the UI
                             _searchController.clear();
                           },
@@ -69,14 +70,6 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                       child: Icon(Icons.qr_code_scanner, color: Colors.white),
                     ),
                   ),
-                  // CircleAvatar(
-                  //   backgroundColor: Colors.teal,
-                  //   child: InkWell(
-                  //     onTap: (){
-                  //     
-                  //     },
-                  //       child: Icon(Icons.add, color: Colors.white)),
-                  // )
                 ],
               ),
             ),
@@ -101,7 +94,6 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                         childAspectRatio: 0.65,
                       ),
                       itemBuilder: (context, index) {
-                        print("HIIIIII${category.data![index].imagePath}");
                         final product = category.data![index];
                         return Stack(
                           children: [
@@ -115,18 +107,10 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                                   Expanded(
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(12),
-                                      child: product.imagePath.isNotEmpty
-                                          ? Image.file(File(product.imagePath),
+                                      child: Image.asset('assets/images/dress1.jpeg',
                                               width: double.infinity,
                                               fit: BoxFit.cover
                                             )
-                                          : Center(
-                                              child: Icon(
-                                                Icons.broken_image,
-                                                size: 50,
-                                                color: Colors.grey,
-                                              ),
-                                            ),
                                     ),
                                   ),
                                   const SizedBox(height: 4),
@@ -135,9 +119,22 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                               ),
                             ),
                             Positioned(
-                              top: 8,
-                              right: 8,
-                              child: Icon(Icons.more_vert, color: Colors.white),
+                              top: 0,
+                              right: 0,
+                              child: PopupMenuButton<String>(
+                                onSelected: (value) {
+                                  if (value == 'delete') {
+                                    _showDeleteConfirmationDialog(context, product,index);
+                                  }
+                                },
+                                itemBuilder: (BuildContext context) => [
+                                  const PopupMenuItem(
+                                    value: 'delete',
+                                    child: Text('Delete'),
+                                  ),
+                                ],
+                                icon: const Icon(Icons.more_vert, color: Colors.white),
+                              ),
                             )
                           ],
                         );
@@ -180,4 +177,30 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
        },
      );
    }
+  void _showDeleteConfirmationDialog(BuildContext context, ProductModel product, index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Product'),
+          content: const Text('Are you sure you want to delete this product?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                ref.read(productProvider.notifier).deleteProduct(index);
+              },
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }

@@ -1,35 +1,43 @@
-import 'package:hive/hive.dart';
-import 'package:janel_abiya/domain/models/SizeModel.dart';
-import 'ProductModel.dart';
-part 'OrderModel.g.dart';
+import 'SizeModel.dart';
 
-@HiveType(typeId: 3) // Ensure the typeId is unique across all models
-class OrderModel extends HiveObject {
-  @HiveField(0)
+class OrderModel {
   final String id;
-
-  @HiveField(1)
   final String productCode;
-
-  @HiveField(2)
   final DateTime orderDate;
-
-  @HiveField(3)
   final String customerName;
-
-  @HiveField(4) // Add a new field for ProductModel
-  final SizeModel sizeModel;
-
-  @HiveField(5) // Add a new field for ProductModel
+  final String color;
   final List<SizeQuantityModel>? sizes;
-
 
   OrderModel({
     required this.id,
     required this.productCode,
     required this.orderDate,
     required this.customerName,
-    required this.sizeModel,
-    required this.sizes
+    required this.color,
+    required this.sizes,
   });
+
+  factory OrderModel.fromJson(Map<String, dynamic> json) {
+    return OrderModel(
+      id: json['id'] as String,
+      productCode: json['productCode'] as String,
+      orderDate: DateTime.parse(json['orderDate'] as String),
+      customerName: json['customerName'] as String,
+      color: json['color'] as String,
+      sizes: (json['sizes'] as List<dynamic>?)
+          ?.map((size) => SizeQuantityModel.fromJson(size as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'productCode': productCode,
+      'orderDate': orderDate.toIso8601String(),
+      'customerName': customerName,
+      'color': color,
+      'sizes': sizes?.map((size) => size.toJson()).toList(),
+    };
+  }
 }

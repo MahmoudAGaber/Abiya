@@ -1,4 +1,5 @@
-package com.example.janel_abiya
+package janel-abiya
+
 
 import io.flutter.embedding.android.FlutterActivity
 

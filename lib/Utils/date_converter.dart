@@ -114,4 +114,8 @@ class DateConverter {
     return num.tryParse(unformatted);
   }
 
+  static String formatDay(DateTime date) {
+    return DateFormat('EEEE').format(date); // Returns day name like "Monday"
+  }
+
 }

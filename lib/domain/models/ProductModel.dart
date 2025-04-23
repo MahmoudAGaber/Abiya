@@ -1,21 +1,10 @@
-import 'package:hive/hive.dart';
-import '../../../domain/models/SizeModel.dart';
+import 'SizeModel.dart';
 
-part 'ProductModel.g.dart';
-
-@HiveType(typeId: 0)
 class ProductModel {
-  @HiveField(0)
-  String productName;
-
-  @HiveField(1)
-  String code;
-
-  @HiveField(2)
-  String imagePath;
-
-  @HiveField(3)
-  List<SizeModel> sizes;
+  final String productName;
+  final String code;
+  final String imagePath;
+  final List<SizeModel> sizes;
 
   ProductModel({
     required this.productName,
@@ -23,6 +12,26 @@ class ProductModel {
     required this.imagePath,
     required this.sizes,
   });
+
+  factory ProductModel.fromJson(Map<String, dynamic> json) {
+    return ProductModel(
+      productName: json['productName'] as String,
+      code: json['code'] as String,
+      imagePath: json['imagePath'] as String,
+      sizes: (json['sizes'] as List<dynamic>)
+          .map((size) => SizeModel.fromJson(size as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'productName': productName,
+      'code': code,
+      'imagePath': imagePath,
+      'sizes': sizes.map((size) => size.toJson()).toList(),
+    };
+  }
 
   ProductModel copyWith({
     String? productName,

@@ -8,7 +8,7 @@ import 'package:janel_abiya/presentation/home/provider/orderViewModel.dart';
 
 import '../../../domain/models/OrderModel.dart';
 import '../../../domain/models/SizeModel.dart';
-import '../provider/categoryViewModel.dart';
+import '../provider/productsViewModel.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final ProductModel? product;
@@ -21,6 +21,7 @@ class ProductDetailScreen extends ConsumerStatefulWidget {
 
 class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   final List<String> sizes = ['38', '40', '42', '44', '46', '48', '50','52','54','56','58','60'];
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +39,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               height: 250,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(25),
-                  child: Image.file(File(widget.product!.imagePath), fit: BoxFit.cover, height: 250, width: double.infinity)),
+                  child: Image.asset('assets/images/dress1.jpeg', fit: BoxFit.cover, height: 250, width: double.infinity)),
             ),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -84,9 +85,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             ...sizes.map((size) {
                               final matchingSize = sizeModel.sizes.firstWhere(
                                     (s) => s.name == size,
-                                orElse: () => SizeQuantityModel(name: size, quantity: '0'),
+                                orElse: () => SizeQuantityModel(name: size, quantity: 0),
                               );
-                              return DataCell(Text(matchingSize.quantity));
+                              return DataCell(Text(matchingSize.quantity.toString()));
                             }).toList(),
                             DataCell(
                               PopupMenuButton<String>(
@@ -95,9 +96,33 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                     _showEditSizesBottomSheet(context, sizeModel);
                                   }
                                   else if (value == 'Drop') {
-                                    setState(() {
-                                      widget.product!.sizes.remove(sizeModel);
-                                    });
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: const Text('Confirm Deletion'),
+                                          content: const Text('Are you sure you want to drop this color?'),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop(); // Close the dialog
+                                              },
+                                              child: const Text('Cancel'),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                ref.read(productProvider.notifier).deleteColorFromProduct(widget.product!.code, sizeModel.color);
+                                                setState(() {
+                                                  widget.product!.sizes.remove(sizeModel);
+                                                });
+                                                Navigator.of(context).pop(); // Close the dialog
+                                              },
+                                              child: const Text('Confirm'),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
                                   } else if (value == 'Order') {
                                     _showOrderSizesBottomSheet(context, sizeModel);
 
@@ -210,7 +235,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                         sizes: sizeControllers
                                             .map((controller) => SizeQuantityModel(
                                                   name: sizes[sizeControllers.indexOf(controller)],
-                                                  quantity: controller.text.isEmpty ? '0' : controller.text,
+                                                  quantity: controller.text.isEmpty ? int.parse('0') : int.parse(controller.text),
                                                 ))
                                             .toList(),
                                       );
@@ -307,8 +332,14 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    TextField(
+                    TextFormField(
                       controller: employeeNameController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your name';
+                        }
+                        return null;
+                      },
                       decoration: const InputDecoration(
                         labelText: 'Employee Name',
                         border: OutlineInputBorder(),
@@ -321,7 +352,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       final size = entry.value;
                       final availableQuantity = sizeModel.sizes.firstWhere(
                             (s) => s.name == size,
-                        orElse: () => SizeQuantityModel(name: size, quantity: '0'),
+                        orElse: () => SizeQuantityModel(name: size, quantity: 0),
                       ).quantity;
               
                       return Padding(
@@ -362,63 +393,157 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       },
     );
   }
- void _handleOrderPlacement(BuildContext context, SizeModel sizeModel, List<TextEditingController> orderControllers, TextEditingController employeeNameController) {
-   final List<SizeQuantityModel> orderedSizes = [];
 
-   setState(() {
-     for (int i = 0; i < orderControllers.length; i++) {
-       final orderQuantity = int.tryParse(orderControllers[i].text) ?? 0;
-       final sizeName = sizes[i];
-       final sizeIndex = sizeModel.sizes.indexWhere((s) => s.name == sizeName);
+void _handleOrderPlacement(BuildContext context, SizeModel sizeModel, List<TextEditingController> orderControllers, TextEditingController employeeNameController) {
+  if (employeeNameController.text.isEmpty) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: const Text('Employee name cannot be empty.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+    return; // Exit if employee name is not provided
+    return; // Exit if employee name is not provided
+  }
 
-       if (sizeIndex != -1) {
-         final availableQuantity = int.tryParse(sizeModel.sizes[sizeIndex].quantity) ?? 0;
+  bool hasInvalidQuantity = false;
+  for (int i = 0; i < orderControllers.length; i++) {
+    final orderQuantity = int.tryParse(orderControllers[i].text) ?? 0;
+    final sizeName = sizes[i];
+    final sizeIndex = sizeModel.sizes.indexWhere((s) => s.name == sizeName);
 
-         if (orderQuantity > availableQuantity) {
-           ScaffoldMessenger.of(context).showSnackBar(
-             SnackBar(
-               content: Text('Cannot order more than available quantity for size $sizeName'),
-             ),
-           );
-           return;
-         }
+    if (sizeIndex != -1) {
+      final availableQuantity = sizeModel.sizes[sizeIndex].quantity ?? 0;
 
-         // Subtract the ordered quantity
-         sizeModel.sizes[sizeIndex] = sizeModel.sizes[sizeIndex].copyWith(
-           quantity: (availableQuantity - orderQuantity).toString(),
-         );
+      if (orderQuantity > availableQuantity) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Error'),
+              content: Text('Invalid quantity for size $sizeName. Available: $availableQuantity'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+        hasInvalidQuantity = true;
+        break;
 
-         // Add the ordered size to the list
-         if (orderQuantity > 0) {
-           orderedSizes.add(SizeQuantityModel(name: sizeName, quantity: orderQuantity.toString()));
-         }
-       }
-     }
-   });
+      }
+    }
+  }
 
-   // Update the state in the ViewModel
-   ref.read(productProvider.notifier).editProductSizeModel(widget.product!.code, sizeModel);
-   ref.read(orderProvider.notifier).addOrder(
-     OrderModel(
-       customerName: employeeNameController.text,
-       orderDate: DateTime.now(),
-       id: '',
-       productCode: widget.product!.code,
-       sizeModel: sizeModel,
-       sizes: orderedSizes, // Pass the ordered sizes here
-     ),
-   );
+  if (hasInvalidQuantity) {
+    return; // Exit if any invalid quantity is found
+  }
 
-   Navigator.pop(context);
- }
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Confirm Order'),
+        content: const Text('Are you sure you want to place this order?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+              _processOrder(context, sizeModel, orderControllers, employeeNameController);
+            },
+            child: const Text('Confirm'),
+          ),
+        ],
+      );
+    },
+  );
+}
 
-  void _showEditSizesBottomSheet(BuildContext context, SizeModel sizeModel) {
+void _processOrder(BuildContext context, SizeModel sizeModel, List<TextEditingController> orderControllers, TextEditingController employeeNameController) {
+  final List<SizeQuantityModel> orderedSizes = [];
+
+  for (int i = 0; i < orderControllers.length; i++) {
+    final orderQuantity = int.tryParse(orderControllers[i].text) ?? 0;
+    final sizeName = sizes[i];
+    final sizeIndex = sizeModel.sizes.indexWhere((s) => s.name == sizeName);
+
+    if (sizeIndex != -1) {
+      final availableQuantity = sizeModel.sizes[sizeIndex].quantity ?? 0;
+
+      if (orderQuantity > availableQuantity) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Cannot order more than available quantity for size $sizeName'),
+          ),
+        );
+        return; // Exit the method if any invalid order is found
+      }
+
+      // Add the ordered size to the list
+      if (orderQuantity > 0) {
+        orderedSizes.add(SizeQuantityModel(name: sizeName, quantity: orderQuantity));
+      }
+    }
+  }
+
+  // Subtract the ordered quantities and update the sizes
+  setState(() {
+    for (final orderedSize in orderedSizes) {
+      final sizeIndex = sizeModel.sizes.indexWhere((s) => s.name == orderedSize.name);
+      if (sizeIndex != -1) {
+        sizeModel.sizes[sizeIndex] = sizeModel.sizes[sizeIndex].copyWith(
+          quantity: sizeModel.sizes[sizeIndex].quantity - orderedSize.quantity,
+        );
+      }
+    }
+  });
+
+  // Update the state in the ViewModel
+  ref.read(productProvider.notifier).editProductSizeModel(widget.product!.code, sizeModel);
+  ref.read(orderProvider.notifier).addOrder(
+    OrderModel(
+      customerName: employeeNameController.text,
+      orderDate: DateTime.now(),
+      id: '',
+      productCode: widget.product!.code,
+      color: sizeModel.color,
+      sizes: orderedSizes,
+    ),
+    employeeNameController.text,
+  );
+
+  Navigator.pop(context);
+}
+
+void _showEditSizesBottomSheet(BuildContext context, SizeModel sizeModel) {
     final List<TextEditingController> sizeControllers = sizes.map((size) {
       final matchingSize = sizeModel.sizes.firstWhere(
             (s) => s.name == size,
-        orElse: () => SizeQuantityModel(name: size, quantity: '0'),
+        orElse: () => SizeQuantityModel(name: size, quantity: 0),
       );
-      return TextEditingController(text: matchingSize.quantity);
+      return TextEditingController(text: matchingSize.quantity.toString());
     }).toList();
 
     showModalBottomSheet(
@@ -511,16 +636,16 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           // Update the existing size
           sizeModel.sizes[existingSizeIndex] = sizeModel.sizes[existingSizeIndex].copyWith(
             quantity: sizeControllers[i].text.isEmpty || int.tryParse(sizeControllers[i].text) == null
-                ? '0'
-                : sizeControllers[i].text,
+                ? int.parse('0')
+                : int.parse(sizeControllers[i].text),
           );
         } else {
           // Add a new size if it doesn't exist
           sizeModel.sizes.add(SizeQuantityModel(
             name: sizeName,
             quantity: sizeControllers[i].text.isEmpty || int.tryParse(sizeControllers[i].text) == null
-                ? '0'
-                : sizeControllers[i].text,
+                ? int.parse('0')
+                : int.parse(sizeControllers[i].text),
           ));
         }
       }

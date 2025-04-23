@@ -46,70 +46,43 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
           SizedBox(height: 8),
 
           // Orders list
-          Expanded(
-            child: order.handelState(
-              onLoading: (state) => const Center(child: CircularProgressIndicator()),
-              onFailure: (state) => Center(child: Text('Error: $state')),
-              onSuccess: (state) {
-                return ListView.builder(
-                  itemCount: order.data!.length,
-                  itemBuilder: (context, index) {
-                    var orderItem = order.data![index];
-                    return Column(
-                      children: [
-                        OrderListItem(
-                          title: orderItem.sizeModel.color,
-                          orderNumber: orderItem.productCode,
-                          orderModel: orderItem,
-                        ),
-                        Divider(height: 1),
-                      ],
-                    );
-                  },
-                );
-              },
-            )
-
-          ),
-
+         Expanded(
+           child: order.handelState(
+             onLoading: (state) => const Center(child: CircularProgressIndicator()),
+             onFailure: (state) => Center(child: Text('Error: $state')),
+             onSuccess: (state) {
+               return ListView.builder(
+                 itemCount: order.data?.length ?? 0,
+                 itemBuilder: (context, index) {
+                   var customerName = order.data?.keys.elementAt(index);
+                   var customerOrders = order.data?[customerName];
+                   if (customerName == null) {
+                     return SizedBox.shrink();
+                   }
+                   return Column(
+                     children: [
+                       ListTile(
+                         title: Text(customerName),
+                         onTap: () {
+                           Navigator.push(
+                             context,
+                             MaterialPageRoute(
+                               builder: (context) => OrderDetailsScreen(orders: customerOrders!),
+                             ),
+                           );
+                         },
+                       ),
+                       Divider(height: 1),
+                     ],
+                   );
+                 },
+               );
+             },
+      ),
+    ),
         ],
       ),
     );
   }
 }
 
-class OrderListItem extends StatelessWidget {
-  final String title;
-  final String orderNumber;
-  OrderModel orderModel;
-
-   OrderListItem({
-    super.key,
-    required this.title,
-    required this.orderNumber,
-    required this.orderModel
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      onTap: (){
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => OrderDetailsScreen(order: orderModel,),
-          ),
-        );
-      },
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 16.0,
-        vertical: 8.0,
-      ),
-      title: Text(title),
-      trailing: Text(
-        orderNumber,
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-      ),
-    );
-  }
-}
