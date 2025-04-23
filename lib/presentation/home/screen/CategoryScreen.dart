@@ -1,7 +1,5 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:janel_abiya/data/StateModel.dart';
@@ -40,8 +38,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                         suffixIcon: _searchController.text.isNotEmpty? IconButton(
                           icon: Icon(Icons.clear,color: Colors.black,),
                           onPressed: () {
-                           // ref.read(productProvider.notifier).init(); // Reset the list state
-                            setState(() {}); // Update the UI
+                            ref.read(productProvider.notifier).fetchProducts(); // Reset the list state
                             _searchController.clear();
                           },
                         ):null,
@@ -53,23 +50,23 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  CircleAvatar(
-                    backgroundColor: Colors.black,
-                    child: InkWell(
-                      onTap: () async {
-                        String barcode = await FlutterBarcodeScanner.scanBarcode(
-                          '#ff6666', // Scanner line color
-                          'Cancel', // Cancel button text
-                          true, // Show flash icon
-                          ScanMode.BARCODE, // Scan mode
-                        );
-                        if (barcode != '-1') { // '-1' is returned when the user cancels
-                          ref.read(productProvider.notifier).searchProduct(barcode);
-                        }
-                      },
-                      child: Icon(Icons.qr_code_scanner, color: Colors.white),
-                    ),
-                  ),
+                  // CircleAvatar(
+                  //   backgroundColor: Colors.black,
+                  //   child: InkWell(
+                  //     onTap: () async {
+                  //       String barcode = await FlutterBarcodeScanner.scanBarcode(
+                  //         '#ff6666', // Scanner line color
+                  //         'Cancel', // Cancel button text
+                  //         true, // Show flash icon
+                  //         ScanMode.BARCODE, // Scan mode
+                  //       );
+                  //       if (barcode != '-1') { // '-1' is returned when the user cancels
+                  //         ref.read(productProvider.notifier).searchProduct(barcode);
+                  //       }
+                  //     },
+                  //     child: Icon(Icons.qr_code_scanner, color: Colors.white),
+                  //   ),
+                  // ),
                 ],
               ),
             ),
@@ -107,7 +104,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                                   Expanded(
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(12),
-                                      child: Image.asset('assets/images/dress1.jpeg',
+                                      child: Image.asset('assets/images/logo.jpeg',
                                               width: double.infinity,
                                               fit: BoxFit.cover
                                             )

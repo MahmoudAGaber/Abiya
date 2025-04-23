@@ -22,6 +22,9 @@ class ProductDetailScreen extends ConsumerStatefulWidget {
 class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   final List<String> sizes = ['38', '40', '42', '44', '46', '48', '50','52','54','56','58','60'];
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController colorController = TextEditingController();
+  final List<TextEditingController> sizeControllers =
+  List.generate(12, (_) => TextEditingController());
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +42,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               height: 250,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(25),
-                  child: Image.asset('assets/images/dress1.jpeg', fit: BoxFit.cover, height: 250, width: double.infinity)),
+                  child: Image.asset('assets/images/logo.jpeg', fit: BoxFit.cover, height: 250, width: double.infinity)),
             ),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -166,9 +169,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     context: context,
                     isScrollControlled: true,
                     builder: (BuildContext context) {
-                      final TextEditingController colorController = TextEditingController();
-                      final List<TextEditingController> sizeControllers =
-                          List.generate(sizes.length, (_) => TextEditingController());
 
                       return SafeArea(
                         child: SizedBox(
@@ -181,85 +181,88 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                                 right: 16,
                                 top: 16,
                               ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Add New Color',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  TextField(
-                                    controller: colorController,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Color Name',
-                                      border: OutlineInputBorder(),
-                                      prefixIcon: Icon(Icons.color_lens),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  ...sizes.asMap().entries.map((entry) {
-                                    final index = entry.key;
-                                    final size = entry.value;
-                                    return Padding(
-                                      padding: const EdgeInsets.only(bottom: 8.0),
-                                      child: TextField(
-                                        controller: sizeControllers[index],
-                                        decoration: InputDecoration(
-                                          labelText: 'Quantity for size $size',
-                                          border: const OutlineInputBorder(),
-                                          prefixIcon: const Icon(Icons.format_list_numbered),
-                                        ),
-                                        keyboardType: TextInputType.number,
+                              child: Form(
+                                key: _formKey,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Add New Color',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
                                       ),
-                                    );
-                                  }).toList(),
-                                  const SizedBox(height: 16),
-                                  ElevatedButton.icon(
-                                    onPressed: () {
-
-                                      if (colorController.text.isEmpty ){
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(
-                                            content: Text('Please fill a Color Name'),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    TextField(
+                                      controller: colorController,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Color Name',
+                                        border: OutlineInputBorder(),
+                                        prefixIcon: Icon(Icons.color_lens),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    ...sizes.asMap().entries.map((entry) {
+                                      final index = entry.key;
+                                      final size = entry.value;
+                                      return Padding(
+                                        padding: const EdgeInsets.only(bottom: 8.0),
+                                        child: TextField(
+                                          controller: sizeControllers[index],
+                                          decoration: InputDecoration(
+                                            labelText: 'Quantity for size $size',
+                                            border: const OutlineInputBorder(),
+                                            prefixIcon: const Icon(Icons.format_list_numbered),
                                           ),
-                                        );
-                                        return;
-                                      }
-                                      var sizeModel = SizeModel(
-                                        color: colorController.text,
-                                        sizes: sizeControllers
-                                            .map((controller) => SizeQuantityModel(
-                                                  name: sizes[sizeControllers.indexOf(controller)],
-                                                  quantity: controller.text.isEmpty ? int.parse('0') : int.parse(controller.text),
-                                                ))
-                                            .toList(),
+                                          keyboardType: TextInputType.number,
+                                        ),
                                       );
-                                      ref.read(productProvider.notifier).addColorToProduct(widget.product!.code, sizeModel);
+                                    }).toList(),
+                                    const SizedBox(height: 16),
+                                    ElevatedButton.icon(
+                                      onPressed: () {
 
-                                      setState(() {
-                                        widget.product!.sizes.add(sizeModel);
-                                      });
+                                        if (colorController.text.isEmpty ){
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(
+                                              content: Text('Please fill a Color Name'),
+                                            ),
+                                          );
+                                          return;
+                                        }
+                                        var sizeModel = SizeModel(
+                                          color: colorController.text,
+                                          sizes: sizeControllers
+                                              .map((controller) => SizeQuantityModel(
+                                                    name: sizes[sizeControllers.indexOf(controller)],
+                                                    quantity: controller.text.isEmpty ? int.parse('0') : int.parse(controller.text),
+                                                  ))
+                                              .toList(),
+                                        );
+                                        ref.read(productProvider.notifier).addColorToProduct(widget.product!.code, sizeModel);
 
-                                      Navigator.pop(context);
+                                        setState(() {
+                                          widget.product!.sizes.add(sizeModel);
+                                        });
 
-                                    },
-                                    icon: const Icon(Icons.add),
-                                    label: const Text('Add Color'),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.teal,
-                                      foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 12,
-                                        horizontal: 20,
+                                        Navigator.pop(context);
+
+                                      },
+                                      icon: const Icon(Icons.add),
+                                      label: const Text('Add Color'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.teal,
+                                        foregroundColor: Colors.white,
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 12,
+                                          horizontal: 20,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           ),

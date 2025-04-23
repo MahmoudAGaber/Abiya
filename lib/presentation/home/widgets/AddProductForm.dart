@@ -63,6 +63,7 @@ class _AddProductFormState extends ConsumerState<AddProductForm> {
 
                 buildTextField(
                   'Product Name',
+                  false,
                   onSaved: (val) => productName = val,
                   validator: (val) {
                     if (val == null || val.isEmpty) {
@@ -71,7 +72,7 @@ class _AddProductFormState extends ConsumerState<AddProductForm> {
                     return null;
                   },
                 ),
-                buildTextField('Price', onSaved: (val) => price = val),
+                //buildTextField('Price',, onSaved: (val) => price = val),
                 // Image Picker
                 const SizedBox(height: 12),
                 // GestureDetector(
@@ -101,22 +102,22 @@ class _AddProductFormState extends ConsumerState<AddProductForm> {
                 // ),
                 // const SizedBox(height: 12),
 
-                buildTextField('Color', onSaved: (val) => color = val),
+                buildTextField('Color',false, onSaved: (val) => color = val),
 
 
                 const SizedBox(height: 12),
-                buildTextField('38', onSaved: (val) => size38 = val),
-                buildTextField('40', onSaved: (val) => size40 = val),
-                buildTextField('42', onSaved: (val) => size42 = val),
-                buildTextField('44', onSaved: (val) => size44 = val),
-                buildTextField('46', onSaved: (val) => size46 = val),
-                buildTextField('48', onSaved: (val) => size48 = val),
-                buildTextField('50', onSaved: (val) => size50 = val),
-                buildTextField('52', onSaved: (val) => size52 = val),
-                buildTextField('54', onSaved: (val) => size54 = val),
-                buildTextField('56', onSaved: (val) => size56 = val),
-                buildTextField('58', onSaved: (val) => size58 = val),
-                buildTextField('60', onSaved: (val) => size60 = val),
+                buildTextField('38',true, onSaved: (val) => size38 = val),
+                buildTextField('40', true,onSaved: (val) => size40 = val),
+                buildTextField('42',true, onSaved: (val) => size42 = val),
+                buildTextField('44',true, onSaved: (val) => size44 = val),
+                buildTextField('46',true, onSaved: (val) => size46 = val),
+                buildTextField('48', true,onSaved: (val) => size48 = val),
+                buildTextField('50',true, onSaved: (val) => size50 = val),
+                buildTextField('52',true, onSaved: (val) => size52 = val),
+                buildTextField('54',true, onSaved: (val) => size54 = val),
+                buildTextField('56',true, onSaved: (val) => size56 = val),
+                buildTextField('58',true, onSaved: (val) => size58 = val),
+                buildTextField('60',true, onSaved: (val) => size60 = val),
 
 
 
@@ -135,27 +136,27 @@ class _AddProductFormState extends ConsumerState<AddProductForm> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
-                          if (_formKey.currentState!.validate()) {
+                          if (productName == null || productName!.isEmpty) {
                             _formKey.currentState!.save();
                             var product = ProductModel(productName:productName!,
                                 code: productName!,
-                                imagePath: ""!,
+                                imagePath: "",
                                 sizes: [
                                   SizeModel(
                                     color: color!,
                                     sizes: [
-                                      SizeQuantityModel(name: '38', quantity: int.parse(size38!)),
-                                      SizeQuantityModel(name: '40', quantity: int.parse(size40!)),
-                                      SizeQuantityModel(name: '42', quantity: int.parse(size42!)),
-                                      SizeQuantityModel(name: '44', quantity: int.parse(size44!)),
-                                      SizeQuantityModel(name: '46', quantity: int.parse(size46!)),
-                                      SizeQuantityModel(name: '48', quantity: int.parse(size48!)),
-                                      SizeQuantityModel(name: '50', quantity: int.parse(size50!)),
-                                      SizeQuantityModel(name: '52', quantity: int.parse(size52!)),
-                                      SizeQuantityModel(name: '54', quantity: int.parse(size54!)),
-                                      SizeQuantityModel(name: '56', quantity: int.parse(size56!)),
-                                      SizeQuantityModel(name: '58', quantity: int.parse(size58!)),
-                                      SizeQuantityModel(name: '60', quantity: int.parse(size60!)),
+                                     SizeQuantityModel(name: '38', quantity: size38 != null && size38!.isNotEmpty ? int.parse(size38!) : 0),
+                                     SizeQuantityModel(name: '40', quantity: size40 != null && size40!.isNotEmpty ? int.parse(size40!) : 0),
+                                     SizeQuantityModel(name: '42', quantity: size42 != null && size42!.isNotEmpty ? int.parse(size42!) : 0),
+                                     SizeQuantityModel(name: '44', quantity: size44 != null && size44!.isNotEmpty ? int.parse(size44!) : 0),
+                                     SizeQuantityModel(name: '46', quantity: size46 != null && size46!.isNotEmpty ? int.parse(size46!) : 0),
+                                     SizeQuantityModel(name: '48', quantity: size48 != null && size48!.isNotEmpty ? int.parse(size48!) : 0),
+                                     SizeQuantityModel(name: '50', quantity: size50 != null && size50!.isNotEmpty ? int.parse(size50!) : 0),
+                                     SizeQuantityModel(name: '52', quantity: size52 != null && size52!.isNotEmpty ? int.parse(size52!) : 0),
+                                     SizeQuantityModel(name: '54', quantity: size54 != null && size54!.isNotEmpty ? int.parse(size54!) : 0),
+                                     SizeQuantityModel(name: '56', quantity: size56 != null && size56!.isNotEmpty ? int.parse(size56!) : 0),
+                                     SizeQuantityModel(name: '58', quantity: size58 != null && size58!.isNotEmpty ? int.parse(size58!) : 0),
+                                     SizeQuantityModel(name: '60', quantity: size60 != null && size60!.isNotEmpty ? int.parse(size60!) : 0),
                                     ],
                                   ),
                                 ]);
@@ -181,12 +182,13 @@ class _AddProductFormState extends ConsumerState<AddProductForm> {
     );
   }
 
-  Widget buildTextField(String label, {required Function(String?) onSaved, String? Function(dynamic val)? validator}) {
+  Widget buildTextField(String label,bool isNumber ,{required Function(String?) onSaved, String? Function(dynamic val)? validator}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: TextFormField(
         onSaved: onSaved,
         validator: validator,
+        keyboardType: isNumber? TextInputType.number : TextInputType.text,
         decoration: InputDecoration(
           labelText: label,
           filled: true,
