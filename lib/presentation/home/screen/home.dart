@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:janel_abiya/domain/models/ProductModel.dart';
 
 import '../widgets/ProductCard.dart';
-import 'CategoryScreen.dart';
-import 'OrderScreen.dart';
+import 'home/CategoryScreen.dart';
+import 'home/OrderScreen.dart';
 
 
 

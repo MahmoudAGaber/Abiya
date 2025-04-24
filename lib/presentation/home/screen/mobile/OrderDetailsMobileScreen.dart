@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
-import '../../../Utils/date_converter.dart';
-import '../../../domain/models/OrderModel.dart';
+import '../../../../Utils/date_converter.dart';
+import '../../../../domain/models/OrderModel.dart';
 
-class OrderDetailsScreen extends StatelessWidget {
+
+class OrderDetailsMobileScreen extends StatelessWidget {
   final List<OrderModel> orders;
 
-  const OrderDetailsScreen({super.key, required this.orders});
-
+  const OrderDetailsMobileScreen({super.key, required this.orders});
 
   @override
   Widget build(BuildContext context) {

@@ -5,8 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:hive/hive.dart';
 import 'package:janel_abiya/presentation/home/provider/productsViewModel.dart';
 import 'package:janel_abiya/presentation/home/screen/home.dart';
-import 'package:janel_abiya/presentation/home/screen/OrderScreen.dart';
-import 'package:janel_abiya/presentation/home/screen/ProductDetailScreen.dart';
+import 'package:janel_abiya/presentation/home/screen/home/OrderScreen.dart';
+import 'package:janel_abiya/presentation/home/screen/home/ProductDetailScreen.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'domain/models/OrderModel.dart';
