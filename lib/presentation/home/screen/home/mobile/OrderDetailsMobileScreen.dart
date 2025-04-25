@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../../../Utils/date_converter.dart';
-import '../../../../domain/models/OrderModel.dart';
+import '../../../../../Utils/date_converter.dart';
+import '../../../../../domain/models/OrderModel.dart';
+
+
 
 
 class OrderDetailsMobileScreen extends StatelessWidget {
@@ -13,7 +15,10 @@ class OrderDetailsMobileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Order Details'),
+        title: const Text('Order Details',style: TextStyle(color: Colors.white),),
+    iconTheme: const IconThemeData(
+    color: Colors.white, // Change the color of the back button
+    ),
         backgroundColor: Colors.teal,
       ),
       body: Padding(
@@ -21,7 +26,7 @@ class OrderDetailsMobileScreen extends StatelessWidget {
         child: ListView(
           children: orders
               .fold<Map<String, List<OrderModel>>>({}, (groupedOrders, order) {
-                final day = DateConverter.formatDay(order.orderDate);
+                String day = " ${DateConverter.formatDay(order.orderDate)}  ${DateConverter.estimatedDate(order.orderDate)}";
                 groupedOrders.putIfAbsent(day, () => []).add(order);
                 return groupedOrders;
               })

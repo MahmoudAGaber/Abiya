@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:janel_abiya/presentation/home/screen/home/web/OrderDetailsWebScreen.dart';
 
-import '../../../../Utils/date_converter.dart';
 import '../../../../domain/models/OrderModel.dart';
-import '../mobile/OrderDetailsMobileScreen.dart';
-import '../web/OrderDetailsWebScreen.dart';
+import 'mobile/OrderDetailsMobileScreen.dart';
+
 
 class OrderDetailsScreen extends StatelessWidget {
   final List<OrderModel> orders;

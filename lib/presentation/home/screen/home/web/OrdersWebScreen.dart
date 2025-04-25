@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:janel_abiya/data/StateModel.dart';
 
-import '../home/orderDetails.dart';
+import '../orderDetails.dart';
+
 
 class OrdersWebScreen extends StatelessWidget {
   final StateModel order;

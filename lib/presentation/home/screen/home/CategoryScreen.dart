@@ -2,10 +2,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:janel_abiya/presentation/home/screen/mobile/MobileCategoryScreen.dart';
-import 'package:janel_abiya/presentation/home/screen/web/WebCategoryScreen.dart';
+import 'package:janel_abiya/presentation/home/screen/home/web/WebCategoryScreen.dart';
 
 import '../../widgets/AddProductForm.dart';
+import 'mobile/MobileCategoryScreen.dart';
 
 class CategoryScreen extends ConsumerStatefulWidget {
    CategoryScreen({super.key});

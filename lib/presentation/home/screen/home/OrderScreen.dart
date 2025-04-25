@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:janel_abiya/data/StateModel.dart';
-import 'package:janel_abiya/domain/models/OrderModel.dart';
 import 'package:janel_abiya/presentation/home/provider/orderViewModel.dart';
+import 'package:janel_abiya/presentation/home/screen/home/web/OrdersWebScreen.dart';
 
-import 'orderDetails.dart';
-import '../mobile/OrdersMobileScreen.dart';
-import '../web/OrdersWebScreen.dart';
+import 'mobile/OrdersMobileScreen.dart';
+
 
 class OrdersScreen extends ConsumerStatefulWidget {
   const OrdersScreen({super.key});

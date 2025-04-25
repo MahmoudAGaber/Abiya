@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-
 import 'package:janel_abiya/domain/models/ProductModel.dart';
-import 'package:janel_abiya/presentation/home/provider/orderViewModel.dart';
+import 'package:janel_abiya/presentation/home/screen/home/web/ProductDetailWebScreen.dart';
 
-import '../../../../domain/models/OrderModel.dart';
-import '../../../../domain/models/SizeModel.dart';
-import '../../provider/productsViewModel.dart';
-import '../mobile/ProductDetailMobileScreen.dart';
-import '../web/ProductDetailWebScreen.dart';
+import 'mobile/ProductDetailMobileScreen.dart';
+
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final ProductModel? product;

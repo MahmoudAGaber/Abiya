@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../domain/models/OrderModel.dart';
-import '../../../../domain/models/ProductModel.dart';
-import '../../../../domain/models/SizeModel.dart';
-import '../../provider/orderViewModel.dart';
-import '../../provider/productsViewModel.dart';
+import '../../../../../domain/models/OrderModel.dart';
+import '../../../../../domain/models/ProductModel.dart';
+import '../../../../../domain/models/SizeModel.dart';
+import '../../../provider/orderViewModel.dart';
+import '../../../provider/productsViewModel.dart';
+
 
 class ProductDetailWebScreen extends ConsumerStatefulWidget {
   final ProductModel? product;
